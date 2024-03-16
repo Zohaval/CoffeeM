@@ -6,17 +6,16 @@ import static org.example.CoffeeRecipe.CAPPUCCINO;
 import static org.example.CoffeeRecipe.ESPRESSO;
 
 public class Menu {
-
     public static CoffeeMachine coffeeMachine = new CoffeeMachine();
     public static Scanner scanner = new Scanner(System.in);
 
     public static void mainMenu() {
         System.out.println("""
-                    \n1. Вкл/Вылк кофемашину
-                    2. Приготовить кофе
-                    3. Ингредиенты
-                    4. Логистика
-                    5. Выйти""");
+                \n1. Вкл/Вылк кофемашину
+                2. Приготовить кофе
+                3. Ингредиенты
+                4. Логистика
+                5. Выйти""");
     }
 
     public static void onOffCoffeeMachine() {
@@ -46,10 +45,10 @@ public class Menu {
                 3. Назад""");
         switch (scanner.nextLine()) {
             case "1":
-                makeEspresso();
+                makeCupOfCoffee(ESPRESSO);
                 break;
             case "2":
-                makeCappuccino();
+                makeCupOfCoffee(CAPPUCCINO);
                 break;
             case "3":
                 break;
@@ -60,20 +59,12 @@ public class Menu {
         }
     }
 
-    private static void makeEspresso() {
-        if (!CoffeeMachine.reviewException(ESPRESSO)) {
+    private static void makeCupOfCoffee(CoffeeRecipe recipe) {
+        if (!CoffeeMachine.reviewException(recipe)) {
             return;
         }
-        CoffeeMachine.makeCoffee(ESPRESSO);
-        System.out.println("Эспрессо готово");
-    }
-
-    private static void makeCappuccino() {
-        if (!CoffeeMachine.reviewException(CAPPUCCINO)) {
-            return;
-        }
-        CoffeeMachine.makeCoffee(CAPPUCCINO);
-        System.out.println("Капучино готово");
+        CoffeeMachine.makeCoffee(recipe);
+        System.out.println(recipe.getName() + " готово");
     }
 
     public static void menuIngredients() {

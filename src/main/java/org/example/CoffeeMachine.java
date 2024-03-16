@@ -1,13 +1,11 @@
 package org.example;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
-
-import static org.example.CoffeeRecipe.ESPRESSO;
 
 public class CoffeeMachine {
 
     public static Scanner scanner = new Scanner(System.in);
-
     private static int water = 700;
     private static int milk = 300;
     private static int coffee = 450;
@@ -122,11 +120,10 @@ public class CoffeeMachine {
     }
 
     public static void checkConditions(CoffeeRecipe recipe) throws CleanException, NotEnoughWaterException, NotEnoughMilkException, NotEnoughCoffeeException {
-        CoffeeMachine.checkClean();
-        CoffeeMachine.checkWater(recipe);
-        CoffeeMachine.checkMilk(recipe);
-        CoffeeMachine.checkCoffee(recipe);
-        CoffeeMachine.setCupOfCoffee(CoffeeMachine.getCupOfCoffee() + 1);
+        checkClean();
+        checkWater(recipe);
+        checkMilk(recipe);
+        checkCoffee(recipe);
     }
 
     public static void checkClean() throws CleanException {
@@ -154,33 +151,37 @@ public class CoffeeMachine {
     }
 
     public static void makeCoffee(CoffeeRecipe recipe) {
-        CoffeeMachine.setWater(CoffeeMachine.getWater() - recipe.getWater());
-        CoffeeMachine.setMilk(CoffeeMachine.getMilk() - recipe.getMilk());
-        CoffeeMachine.setCoffee(CoffeeMachine.getCoffee() - recipe.getCoffee());
+        setWater(getWater() - recipe.getWater());
+        setMilk(getMilk() - recipe.getMilk());
+        setCoffee(getCoffee() - recipe.getCoffee());
+        setCupOfCoffee(getCupOfCoffee() + 1);
     }
 
     public static void main(String[] args) {
         while (true) {
-            Menu.mainMenu();
-            int answer = scanner.nextInt();
-            switch (answer) {
-                case 1:
-                    Menu.onOffCoffeeMachine();
-                    break;
-                case 2:
-                    Menu.isOn();
-                    break;
-                case 3:
-                    Menu.menuIngredients();
-                    break;
-                case 4:
-                    Menu.menuCleaningCoffeeMachine();
-                    break;
-                case 5:
-                    return;
-                default:
-                    System.out.println("\nНекорректный ввод");
-                    break;
+            try {
+                Menu.mainMenu();
+                int answer = scanner.nextInt();
+                switch (answer) {
+                    case 1:
+                        Menu.onOffCoffeeMachine();
+                        break;
+                    case 2:
+                        Menu.isOn();
+                        break;
+                    case 3:
+                        Menu.menuIngredients();
+                        break;
+                    case 4:
+                        Menu.menuCleaningCoffeeMachine();
+                        break;
+                    case 5:
+                        return;
+                }
+            }
+            catch (InputMismatchException ex) {
+                scanner.next();
+                System.out.println("\nНекорректный ввод");
             }
         }
     }
