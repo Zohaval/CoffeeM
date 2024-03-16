@@ -3,6 +3,11 @@ package org.example;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import org.example.Exceptions.CleanException;
+import org.example.Exceptions.NotEnoughCoffeeException;
+import org.example.Exceptions.NotEnoughMilkException;
+import org.example.Exceptions.NotEnoughWaterException;
+
 public class CoffeeMachine {
 
     public static Scanner scanner = new Scanner(System.in);
@@ -65,7 +70,10 @@ public class CoffeeMachine {
 
     public static void addWater() {
         int ingredient = scanner.nextInt();
-        if (getWater() + ingredient <= MAX_WATER) {
+        if (ingredient < 0) {
+            System.out.println("\nНекорректный ввод");
+        }
+        else if (getWater() + ingredient <= MAX_WATER) {
             setWater(getWater() + ingredient);
             System.out.println("Воды в кофемашине " + getWater() + " мл");
         }
@@ -76,7 +84,10 @@ public class CoffeeMachine {
 
     public static void addMilk() {
         int ingredient = scanner.nextInt();
-        if (getMilk() + ingredient <= MAX_MILK) {
+        if (ingredient < 0) {
+            System.out.println("\nНекорректный ввод");
+        }
+        else if (getMilk() + ingredient <= MAX_MILK) {
             setMilk(getMilk() + ingredient);
             System.out.println("Молока в кофемашине " + getMilk() + " мл");
         }
@@ -87,7 +98,10 @@ public class CoffeeMachine {
 
     public static void addCoffee() {
         int ingredient = scanner.nextInt();
-        if (getCoffee() + ingredient <= MAX_COFFEE) {
+        if (ingredient < 0) {
+            System.out.println("\nНекорректный ввод");
+        }
+        else if (getCoffee() + ingredient <= MAX_COFFEE) {
             setCoffee(getCoffee() + ingredient);
             System.out.println("Кофе в кофемашине " + getCoffee() + " г");
         }
@@ -177,6 +191,8 @@ public class CoffeeMachine {
                         break;
                     case 5:
                         return;
+                    default:
+                        System.out.println("\nНекорректный ввод");
                 }
             }
             catch (InputMismatchException ex) {

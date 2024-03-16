@@ -40,6 +40,31 @@ public class Menu {
 
     public static void menuCoffee() {
         System.out.println("""
+                \n1. Приготовить 1 кофе
+                2. Приготовить 3 кофе
+                3. Приготовить n кофе
+                4. Назад""");
+        switch (scanner.nextLine()) {
+            case "1":
+                menuCupOfCoffee();
+                break;
+            case "2":
+                menuThreeCupOfCoffee();
+                break;
+            case "3":
+                menuNCupOfCoffee();
+                break;
+            case "4":
+                break;
+            default:
+                System.out.println("\nНекорректный ввод");
+                break;
+
+        }
+    }
+
+    public static void menuCupOfCoffee() {
+        System.out.println("""
                 \n1. Приготовить Эспрессо
                 2. Приготовить Капучино
                 3. Назад""");
@@ -57,6 +82,14 @@ public class Menu {
                 break;
 
         }
+    }
+
+    public static void menuThreeCupOfCoffee() {
+
+    }
+
+    public static void menuNCupOfCoffee() {
+
     }
 
     private static void makeCupOfCoffee(CoffeeRecipe recipe) {
