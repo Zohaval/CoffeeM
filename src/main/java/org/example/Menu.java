@@ -16,10 +16,10 @@ public class Menu {
                 mainMenu();
                 switch (scanner.nextInt()) {
                     case 1:
-                        onOffCoffeeMachine();
+                        CoffeeMachine.onOffCoffeeMachine();
                         break;
                     case 2:
-                        isOn();
+                        CoffeeMachine.isOn();
                         break;
                     case 3:
                         menuIngredients();
@@ -47,26 +47,6 @@ public class Menu {
                 3. Ингредиенты
                 4. Логистика
                 5. Выйти""");
-    }
-
-    public static void onOffCoffeeMachine() {
-        if (coffeeMachine.getPowerOn()) {
-            coffeeMachine.setPowerOn(false);
-            System.out.println("Кофемашина выключена");
-        }
-        else {
-            coffeeMachine.setPowerOn(true);
-            System.out.println("Кофемашина включена");
-        }
-    }
-
-    public static void isOn() {
-        if (coffeeMachine.getPowerOn()) {
-            menuCoffee();
-        }
-        else {
-            System.out.println("Включите кофемашину, чтобы приготовить кофе");
-        }
     }
 
     public static void menuCoffee() {

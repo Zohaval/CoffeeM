@@ -11,7 +11,7 @@ public class CoffeeMachine {
     private static int milk = 300;
     private static int coffee = 450;
     private static int cupOfCoffee = 2;
-    private boolean powerOn = false;
+    private static boolean powerOn = false;
     public static final int MAX_WATER = 1000;
     public static final int MAX_MILK = 600;
     public static final int MAX_COFFEE = 500;
@@ -33,7 +33,7 @@ public class CoffeeMachine {
         return cupOfCoffee;
     }
 
-    public boolean getPowerOn() {
+    public static boolean getPowerOn() {
         return powerOn;
     }
 
@@ -53,8 +53,28 @@ public class CoffeeMachine {
         CoffeeMachine.cupOfCoffee = cupOfCoffee;
     }
 
-    public void setPowerOn(boolean powerOn) {
-        this.powerOn = powerOn;
+    public static void setPowerOn(boolean powerOn) {
+        CoffeeMachine.powerOn = powerOn;
+    }
+
+    public static void onOffCoffeeMachine() {
+        if (getPowerOn()) {
+            setPowerOn(false);
+            System.out.println("Кофемашина выключена");
+        }
+        else {
+            setPowerOn(true);
+            System.out.println("Кофемашина включена");
+        }
+    }
+
+    public static void isOn() {
+        if (getPowerOn()) {
+            Menu.menuCoffee();
+        }
+        else {
+            System.out.println("Включите кофемашину, чтобы приготовить кофе");
+        }
     }
 
     public static void ingredientsStatus() {
