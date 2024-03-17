@@ -1,8 +1,5 @@
 package org.example;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
 import org.example.Exceptions.CleanException;
 import org.example.Exceptions.NotEnoughCoffeeException;
 import org.example.Exceptions.NotEnoughMilkException;
@@ -10,7 +7,6 @@ import org.example.Exceptions.NotEnoughWaterException;
 
 public class CoffeeMachine {
 
-    public static Scanner scanner = new Scanner(System.in);
     private static int water = 700;
     private static int milk = 300;
     private static int coffee = 450;
@@ -62,52 +58,69 @@ public class CoffeeMachine {
     }
 
     public static void ingredientsStatus() {
-        System.out.println("Воды " + getWater() + " мл");
-        System.out.println("Молока " + getMilk() + " мл");
-        System.out.println("Зёрен кофе " + getCoffee() + " г");
-        System.out.println();
+        System.out.printf("""
+                Воды %d мл
+                Молока %d мл
+                Зёрен кофе %d г
+                """,
+                getWater(), getMilk(), getCoffee());
     }
 
-    public static void addWater() {
-        int ingredient = scanner.nextInt();
-        if (ingredient < 0) {
+    public static void addWater(int amountWater) {
+        if (amountWater < 0) {
             System.out.println("\nНекорректный ввод");
         }
-        else if (getWater() + ingredient <= MAX_WATER) {
-            setWater(getWater() + ingredient);
-            System.out.println("Воды в кофемашине " + getWater() + " мл");
+        else if (getWater() + amountWater <= MAX_WATER) {
+            setWater(getWater() + amountWater);
+            System.out.printf("Воды в кофемашине %d мл\n", getWater());
         }
         else {
-            System.out.println("Вы превысите объём резервуара");
-        }
-    }
-
-    public static void addMilk() {
-        int ingredient = scanner.nextInt();
-        if (ingredient < 0) {
-            System.out.println("\nНекорректный ввод");
-        }
-        else if (getMilk() + ingredient <= MAX_MILK) {
-            setMilk(getMilk() + ingredient);
-            System.out.println("Молока в кофемашине " + getMilk() + " мл");
-        }
-        else {
-            System.out.println("Вы превысите объём резервуара");
+            System.out.println("\nВы превысите объём резервуара");
         }
     }
 
-    public static void addCoffee() {
-        int ingredient = scanner.nextInt();
-        if (ingredient < 0) {
+    public static void addMilk(int amountMilk) {
+        if (amountMilk < 0) {
             System.out.println("\nНекорректный ввод");
         }
-        else if (getCoffee() + ingredient <= MAX_COFFEE) {
-            setCoffee(getCoffee() + ingredient);
-            System.out.println("Кофе в кофемашине " + getCoffee() + " г");
+        else if (getMilk() + amountMilk <= MAX_MILK) {
+            setMilk(getMilk() + amountMilk);
+            System.out.printf("Молока в кофемашине %d мл\n", getMilk());
         }
         else {
-            System.out.println("Вы превысите объём резервуара");
+            System.out.println("\nВы превысите объём резервуара");
         }
+    }
+
+    public static void addCoffee(int amountCoffee) {
+        if (amountCoffee < 0) {
+            System.out.println("\nНекорректный ввод");
+        }
+        else if (getCoffee() + amountCoffee <= MAX_COFFEE) {
+            setCoffee(getCoffee() + amountCoffee);
+            System.out.printf("Кофе в кофемашине %d г\n", getCoffee());
+        }
+        else {
+            System.out.println("\nВы превысите объём резервуара");
+        }
+    }
+
+    public static void makeCupOfCoffee(CoffeeRecipe recipe) {
+        if (CoffeeMachine.reviewException(recipe)) {
+            return;
+        }
+        CoffeeMachine.makeCoffee(recipe);
+        System.out.println(recipe.getName() + " готово");
+    }
+
+    public static void makeThreeCupOfCoffee(CoffeeRecipe recipe) {
+        for (int i = 0; i <= 3; i++) {
+            if (CoffeeMachine.reviewException(recipe)) {
+                return;
+            }
+        }
+        CoffeeMachine.makeCoffee(recipe);
+        System.out.println(recipe.getName() + " готово");
     }
 
     public static boolean reviewException(CoffeeRecipe recipe) {
@@ -116,21 +129,21 @@ public class CoffeeMachine {
         }
         catch (CleanException ex) {
             System.out.println("Кофемашина грязная");
-            return false;
+            return true;
         }
         catch (NotEnoughWaterException ex) {
             System.out.println("Недостаточно воды");
-            return false;
+            return true;
         }
         catch (NotEnoughMilkException ex) {
             System.out.println("Недостаточно молока");
-            return false;
+            return true;
         }
         catch (NotEnoughCoffeeException ex) {
             System.out.println("Недостаточно кофе");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static void checkConditions(CoffeeRecipe recipe) throws CleanException, NotEnoughWaterException, NotEnoughMilkException, NotEnoughCoffeeException {
@@ -171,34 +184,19 @@ public class CoffeeMachine {
         setCupOfCoffee(getCupOfCoffee() + 1);
     }
 
-    public static void main(String[] args) {
-        while (true) {
-            try {
-                Menu.mainMenu();
-                int answer = scanner.nextInt();
-                switch (answer) {
-                    case 1:
-                        Menu.onOffCoffeeMachine();
-                        break;
-                    case 2:
-                        Menu.isOn();
-                        break;
-                    case 3:
-                        Menu.menuIngredients();
-                        break;
-                    case 4:
-                        Menu.menuCleaningCoffeeMachine();
-                        break;
-                    case 5:
-                        return;
-                    default:
-                        System.out.println("\nНекорректный ввод");
-                }
-            }
-            catch (InputMismatchException ex) {
-                scanner.next();
-                System.out.println("\nНекорректный ввод");
-            }
+    public static void isClean() {
+        if (getCupOfCoffee() == 0) {
+            System.out.println("Кофемашина не требуется в чистке");
+        }
+        else {
+            setCupOfCoffee(0);
+            System.out.println("Кофемашина очищена");
         }
     }
+
+    public static void recipeCoffee(CoffeeRecipe coffeeRecipe) {
+        System.out.printf("Рецепт для %s:\nВоды %d мл\nМолока %d мл\nЗёрен кофе %d г\n",
+                coffeeRecipe.getName(), coffeeRecipe.getWater(), coffeeRecipe.getMilk(), coffeeRecipe.getCoffee());
+    }
 }
+//      CoffeeRecipe[] coffeeRecipe = CoffeeRecipe.values();
