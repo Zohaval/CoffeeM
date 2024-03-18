@@ -1,5 +1,9 @@
 package org.example;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.example.Exceptions.CleanException;
 import org.example.Exceptions.NotEnoughCoffeeException;
 import org.example.Exceptions.NotEnoughMilkException;
@@ -7,15 +11,19 @@ import org.example.Exceptions.NotEnoughWaterException;
 
 public class CoffeeMachine {
 
-    private static int water = 700;
-    private static int milk = 300;
-    private static int coffee = 450;
-    private static int cupOfCoffee = 2;
+    private static int water = 1000;
+    private static int milk = 600;
+    private static int coffee = 500;
+    private static int cupOfCoffee = 0;
+    private static int cupOfEspresso = 0;
+    private static int cupOfCappuccino = 0;
     private static boolean powerOn = false;
     public static final int MAX_WATER = 1000;
     public static final int MAX_MILK = 600;
     public static final int MAX_COFFEE = 500;
     private static final int MAX_CUP_OF_COFFEE = 10;
+    private static LinkedList<String> history = new LinkedList<>();
+    public static LinkedList<Profile> profiles = new LinkedList<>();
 
     public static int getWater() {
         return water;
@@ -31,6 +39,14 @@ public class CoffeeMachine {
 
     public static int getCupOfCoffee() {
         return cupOfCoffee;
+    }
+
+    public static int getCupOfEspresso() {
+        return cupOfEspresso;
+    }
+
+    public static int getCupOfCappuccino() {
+        return cupOfCappuccino;
     }
 
     public static boolean getPowerOn() {
@@ -53,6 +69,14 @@ public class CoffeeMachine {
         CoffeeMachine.cupOfCoffee = cupOfCoffee;
     }
 
+    public static void setCupOfEspresso(int cupOfEspresso) {
+        CoffeeMachine.cupOfEspresso = cupOfEspresso;
+    }
+
+    public static void setCupOfCappuccino(int cupOfCappuccino) {
+        CoffeeMachine.cupOfCappuccino = cupOfCappuccino;
+    }
+
     public static void setPowerOn(boolean powerOn) {
         CoffeeMachine.powerOn = powerOn;
     }
@@ -61,10 +85,12 @@ public class CoffeeMachine {
         if (getPowerOn()) {
             setPowerOn(false);
             System.out.println("Кофемашина выключена");
+            history.add("Кофемашина выключена");
         }
         else {
             setPowerOn(true);
             System.out.println("Кофемашина включена");
+            history.add("Кофемашина включена");
         }
     }
 
@@ -77,6 +103,12 @@ public class CoffeeMachine {
         }
     }
 
+    public static void saveProfile(Profile profile) {
+        profiles.add(profile);
+    }
+
+
+
     public static void ingredientsStatus() {
         System.out.printf("""
                 Воды %d мл
@@ -84,6 +116,7 @@ public class CoffeeMachine {
                 Зёрен кофе %d г
                 """,
                 getWater(), getMilk(), getCoffee());
+        history.add("Статус ингредиентов");
     }
 
     public static void addWater(int amountWater) {
@@ -93,6 +126,7 @@ public class CoffeeMachine {
         else if (getWater() + amountWater <= MAX_WATER) {
             setWater(getWater() + amountWater);
             System.out.printf("Воды в кофемашине %d мл\n", getWater());
+            history.add("Добавлено воды: " + amountWater + " мл");
         }
         else {
             System.out.println("\nВы превысите объём резервуара");
@@ -106,6 +140,7 @@ public class CoffeeMachine {
         else if (getMilk() + amountMilk <= MAX_MILK) {
             setMilk(getMilk() + amountMilk);
             System.out.printf("Молока в кофемашине %d мл\n", getMilk());
+            history.add("Добавлено молока: " + amountMilk + " мл");
         }
         else {
             System.out.println("\nВы превысите объём резервуара");
@@ -119,33 +154,26 @@ public class CoffeeMachine {
         else if (getCoffee() + amountCoffee <= MAX_COFFEE) {
             setCoffee(getCoffee() + amountCoffee);
             System.out.printf("Кофе в кофемашине %d г\n", getCoffee());
+            history.add("Добавлено кофе: " + amountCoffee + " г");
         }
         else {
             System.out.println("\nВы превысите объём резервуара");
         }
     }
 
-    public static void makeCupOfCoffee(CoffeeRecipe recipe) {
-        if (CoffeeMachine.reviewException(recipe)) {
-            return;
-        }
-        CoffeeMachine.makeCoffee(recipe);
-        System.out.println(recipe.getName() + " готово");
-    }
-
-    public static void makeThreeCupOfCoffee(CoffeeRecipe recipe) {
-        for (int i = 0; i <= 3; i++) {
-            if (CoffeeMachine.reviewException(recipe)) {
+    public static void makeCupsOfCoffee(CoffeeRecipe recipe, int amount) {
+        for (int i = 0; i <= amount; i++) {
+            if (reviewException(recipe, amount)) {
                 return;
             }
         }
-        CoffeeMachine.makeCoffee(recipe);
+        makeCoffee(recipe, amount);
         System.out.println(recipe.getName() + " готово");
     }
 
-    public static boolean reviewException(CoffeeRecipe recipe) {
+    public static boolean reviewException(CoffeeRecipe recipe, int amount) {
         try {
-            checkConditions(recipe);
+            checkConditions(recipe, amount);
         }
         catch (CleanException ex) {
             System.out.println("Кофемашина грязная");
@@ -166,11 +194,11 @@ public class CoffeeMachine {
         return false;
     }
 
-    public static void checkConditions(CoffeeRecipe recipe) throws CleanException, NotEnoughWaterException, NotEnoughMilkException, NotEnoughCoffeeException {
+    public static void checkConditions(CoffeeRecipe recipe, int amount) throws CleanException, NotEnoughWaterException, NotEnoughMilkException, NotEnoughCoffeeException {
         checkClean();
-        checkWater(recipe);
-        checkMilk(recipe);
-        checkCoffee(recipe);
+        checkWater(recipe, amount);
+        checkMilk(recipe, amount);
+        checkCoffee(recipe, amount);
     }
 
     public static void checkClean() throws CleanException {
@@ -179,29 +207,43 @@ public class CoffeeMachine {
         }
     }
 
-    public static void checkWater(CoffeeRecipe recipe) throws NotEnoughWaterException {
-        if (recipe.getWater() > getWater()) {
+    public static void checkWater(CoffeeRecipe recipe, int amount) throws NotEnoughWaterException {
+        if (recipe.getWater() * amount > getWater()) {
             throw new NotEnoughWaterException();
         }
     }
 
-    public static void checkMilk(CoffeeRecipe recipe) throws NotEnoughMilkException {
-        if (recipe.getMilk() >= getMilk()) {
+    public static void checkMilk(CoffeeRecipe recipe, int amount) throws NotEnoughMilkException {
+        if (recipe.getMilk() * amount >= getMilk()) {
             throw new NotEnoughMilkException();
         }
     }
 
-    public static void checkCoffee(CoffeeRecipe recipe) throws NotEnoughCoffeeException {
-        if (recipe.getCoffee() >= getCoffee()) {
+    public static void checkCoffee(CoffeeRecipe recipe, int amount) throws NotEnoughCoffeeException {
+        if (recipe.getCoffee() * amount >= getCoffee()) {
             throw new NotEnoughCoffeeException();
         }
     }
 
-    public static void makeCoffee(CoffeeRecipe recipe) {
-        setWater(getWater() - recipe.getWater());
-        setMilk(getMilk() - recipe.getMilk());
-        setCoffee(getCoffee() - recipe.getCoffee());
-        setCupOfCoffee(getCupOfCoffee() + 1);
+    public static void makeCoffee(CoffeeRecipe recipe, int amount) {
+        setWater(getWater() - recipe.getWater() * amount);
+        setMilk(getMilk() - recipe.getMilk() * amount);
+        setCoffee(getCoffee() - recipe.getCoffee() * amount);
+        setCupOfCoffee(getCupOfCoffee() + amount);
+        if (recipe.getName().equals("Эспрессо")) {
+            setCupOfEspresso(getCupOfEspresso() + amount);
+        }
+        if (recipe.getName().equals("Капучино")) {
+            setCupOfCappuccino(getCupOfCappuccino() + amount);
+        }
+    }
+
+    public static void amountPreparedCoffee() {
+        System.out.printf("""
+                \nСделано порций эспрессо: %d
+                Сделано порций капучино: %d
+                """, CoffeeMachine.getCupOfEspresso(), CoffeeMachine.getCupOfCappuccino());
+        history.add("Сколько порций кофе было сделано");
     }
 
     public static void isClean() {
@@ -210,13 +252,27 @@ public class CoffeeMachine {
         }
         else {
             setCupOfCoffee(0);
+            setCupOfEspresso(0);
+            setCupOfCappuccino(0);
             System.out.println("Кофемашина очищена");
+            history.add("Очистить кофемашину");
         }
     }
 
     public static void recipeCoffee(CoffeeRecipe coffeeRecipe) {
         System.out.printf("Рецепт для %s:\nВоды %d мл\nМолока %d мл\nЗёрен кофе %d г\n",
                 coffeeRecipe.getName(), coffeeRecipe.getWater(), coffeeRecipe.getMilk(), coffeeRecipe.getCoffee());
+        history.add("Рецепт " + coffeeRecipe.getName());
+    }
+
+    public static void actions() {
+        history.add("История действий");
+        for (String action : history) {
+            System.out.println(action);
+        }
+        System.out.printf("""
+                Приготовленно порций эспрессо: %d
+                Приготовленно порций капучино: %d
+                """, getCupOfEspresso(), getCupOfCappuccino());
     }
 }
-//      CoffeeRecipe[] coffeeRecipe = CoffeeRecipe.values();

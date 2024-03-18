@@ -1,13 +1,13 @@
 package org.example;
 
 import java.util.InputMismatchException;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import static org.example.CoffeeRecipe.CAPPUCCINO;
 import static org.example.CoffeeRecipe.ESPRESSO;
 
 public class Menu {
-    public static CoffeeMachine coffeeMachine = new CoffeeMachine();
     public static Scanner scanner = new Scanner(System.in);
 
     public static void start() {
@@ -22,12 +22,15 @@ public class Menu {
                         CoffeeMachine.isOn();
                         break;
                     case 3:
-                        menuIngredients();
+                        menuCreateProfile();
                         break;
                     case 4:
-                        menuLogistics();
+                        menuIngredients();
                         break;
                     case 5:
+                        menuLogistics();
+                        break;
+                    case 6:
                         return;
                     default:
                         System.out.println("\nНекорректный ввод");
@@ -42,11 +45,12 @@ public class Menu {
 
     public static void mainMenu() {
         System.out.println("""
-                \n1. Вкл/Вылк кофемашину
+                \n1. Вкл/Выкл кофемашину
                 2. Приготовить кофе
-                3. Ингредиенты
-                4. Логистика
-                5. Выйти""");
+                3. Создать именной набор
+                4. Ингредиенты
+                5. Логистика
+                6. Выйти""");
     }
 
     public static void menuCoffee() {
@@ -54,7 +58,8 @@ public class Menu {
                 \n1. Приготовить 1 кофе
                 2. Приготовить 3 кофе
                 3. Приготовить n кофе
-                4. Назад""");
+                4. Приготовить именной набор
+                5. Назад""");
         switch (scanner.nextInt()) {
             case 1:
                 menuCupOfCoffee();
@@ -66,6 +71,9 @@ public class Menu {
                 menuNCupOfCoffee();
                 break;
             case 4:
+                menuProfile();
+                break;
+            case 5:
                 break;
             default:
                 System.out.println("\nНекорректный ввод");
@@ -80,10 +88,10 @@ public class Menu {
                 3. Назад""");
         switch (scanner.nextInt()) {
             case 1:
-                CoffeeMachine.makeCupOfCoffee(ESPRESSO);
+                CoffeeMachine.makeCupsOfCoffee(ESPRESSO, 1);
                 break;
             case 2:
-                CoffeeMachine.makeCupOfCoffee(CAPPUCCINO);
+                CoffeeMachine.makeCupsOfCoffee(CAPPUCCINO, 1);
                 break;
             case 3:
                 break;
@@ -93,15 +101,44 @@ public class Menu {
         }
     }
 
+    public static void menuCreateProfile() {
+        Profile profile;
+
+        System.out.println("Введите имя набора: ");
+        String name = scanner.nextLine();
+        name = scanner.nextLine();
+
+        System.out.print("\nВведите количество порций эспрессо: ");
+        int amountEspresso = scanner.nextInt();
+
+        System.out.print("\nВведите количество порций капучино: ");
+        int amountCappuccino = scanner.nextInt();
+
+        profile = new Profile(name, amountEspresso, amountCappuccino);
+
+        CoffeeMachine.saveProfile(profile);
+
+    }
+
+    public static void menuProfile() {
+        LinkedList<Profile> listProfiles = CoffeeMachine.profiles;
+        for (int i = 0; i < listProfiles.size(); i++) {
+            Profile profile = listProfiles.get(i);
+            System.out.println(profile.getNameProfile());
+        }
+    }
+
     public static void menuThreeCupOfCoffee() {
+        System.out.println("""
+                \n1. Приготовить 3 эспрессо
+                2. Приготовить 3 капучино
+                3. Назад""");
         switch (scanner.nextInt()) {
             case 1:
-                System.out.println("Приготовить 3 эспрессо");
-                CoffeeMachine.makeThreeCupOfCoffee(ESPRESSO);
+                CoffeeMachine.makeCupsOfCoffee(ESPRESSO, 3);
                 break;
             case 2:
-                System.out.println("Приготовить 3 капучино");
-                CoffeeMachine.makeThreeCupOfCoffee(CAPPUCCINO);
+                CoffeeMachine.makeCupsOfCoffee(CAPPUCCINO, 3);
                 break;
             case 3:
                 break;
@@ -112,7 +149,25 @@ public class Menu {
     }
 
     public static void menuNCupOfCoffee() {
-
+        System.out.println("""
+                \n1. Приготовить n порций эспрессо
+                2. Приготовить n порций капучино
+                3. Назад""");
+        switch (scanner.nextInt()) {
+            case 1:
+                System.out.print("\nКоличество порций эспрессо: ");
+                CoffeeMachine.makeCupsOfCoffee(ESPRESSO, scanner.nextInt());
+                break;
+            case 2:
+                System.out.print("\nКоличество порций капучино: ");
+                CoffeeMachine.makeCupsOfCoffee(CAPPUCCINO, scanner.nextInt());
+                break;
+            case 3:
+                break;
+            default:
+                System.out.println("\nНекорректный ввод");
+                break;
+        }
     }
 
     public static void menuIngredients() {
@@ -129,18 +184,15 @@ public class Menu {
                 break;
             case 2:
                 System.out.print("Добавить воды: ");
-                int amountWater = scanner.nextInt();
-                CoffeeMachine.addWater(amountWater);
+                CoffeeMachine.addWater(scanner.nextInt());
                 break;
             case 3:
                 System.out.print("Добавить молока: ");
-                int amountMilk = scanner.nextInt();
-                CoffeeMachine.addMilk(amountMilk);
+                CoffeeMachine.addMilk(scanner.nextInt());
                 break;
             case 4:
                 System.out.print("Добавить кофе: ");
-                int amountCoffee = scanner.nextInt();
-                CoffeeMachine.addCoffee(amountCoffee);
+                CoffeeMachine.addCoffee(scanner.nextInt());
                 break;
             case 5:
                 break;
@@ -155,10 +207,11 @@ public class Menu {
                 \n1. Сколько порций кофе было сделано
                 2. Очистить кофемашину
                 3. Посмотреть рецепты
-                4. Назад""");
+                4. История действий
+                5. Назад""");
         switch (scanner.nextInt()) {
             case 1:
-                System.out.println("Сделано порций кофе: " + CoffeeMachine.getCupOfCoffee());
+                CoffeeMachine.amountPreparedCoffee();
                 break;
             case 2:
                 CoffeeMachine.isClean();
@@ -167,6 +220,8 @@ public class Menu {
                 menuRecipesCoffee();
                 break;
             case 4:
+                CoffeeMachine.actions();
+            case 5:
                 break;
             default:
                 System.out.println("\nНекорректный ввод");
